@@ -1,7 +1,5 @@
 package com.example.mevin.volleytest;
 
-
-
 import android.app.ProgressDialog;
 import android.graphics.Movie;
 import android.support.v7.app.AppCompatActivity;
@@ -29,59 +27,131 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mList;
 
-    private LinearLayoutManager linearLayoutManager;
-    private DividerItemDecoration dividerItemDecoration;
-    private List<Detail> detailList;
-    private RecyclerView.Adapter adapter;
-    private String url = "http://revlogtest.herokuapp.com/json";
+    private TextView retailerName;
+    private TextView returnDate;
+
+    private RecyclerView mList;
+    private RecyclerView sList;
+
+
+    private LinearLayoutManager linearLayoutManager1;
+    private LinearLayoutManager linearLayoutManager2;
+
+    private DividerItemDecoration dividerItemDecoration1;
+    private DividerItemDecoration dividerItemDecoration2;
+
+    private List<Item> itemList;
+    private List<Status> statusList;
+    private RecyclerView.Adapter itemAdapter;
+    private RecyclerView.Adapter statusAdapter;
+
+
+    private String url = "http://hulrevlog.herokuapp.com/api/returns";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        retailerName =(TextView)findViewById(R.id.retailer_name);
+        returnDate =(TextView)findViewById(R.id.return_date);
+
         mList = findViewById(R.id.main_list);
+        sList = findViewById(R.id.status_list);
 
-        detailList = new ArrayList<>();
-        adapter = new DetailAdapter(getApplicationContext(),detailList);
+        itemList = new ArrayList<>();
+        statusList = new ArrayList<>();
 
-        linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        dividerItemDecoration = new DividerItemDecoration(mList.getContext(), linearLayoutManager.getOrientation());
+
+        itemAdapter = new ItemAdapter(getApplicationContext(),itemList);
+        statusAdapter = new StatusAdapter(getApplicationContext(),statusList);
+
+        linearLayoutManager1 = new LinearLayoutManager(this);
+        linearLayoutManager2 = new LinearLayoutManager(this);
+
+        linearLayoutManager1.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
+
+        dividerItemDecoration1 = new DividerItemDecoration(mList.getContext(), linearLayoutManager1.getOrientation());
+        dividerItemDecoration2 = new DividerItemDecoration(sList.getContext(), linearLayoutManager2.getOrientation());
 
         mList.setHasFixedSize(true);
-        mList.setLayoutManager(linearLayoutManager);
-        mList.addItemDecoration(dividerItemDecoration);
-        mList.setAdapter(adapter);
+        mList.setLayoutManager(linearLayoutManager1);
+        mList.addItemDecoration(dividerItemDecoration1);
+        mList.setAdapter(itemAdapter);
+
+
+        sList.setHasFixedSize(true);
+        sList.setLayoutManager(linearLayoutManager2);
+        sList.addItemDecoration(dividerItemDecoration2);
+        sList.setAdapter(statusAdapter);
 
         getData();
 
 
     }
+
+
     private void getData() {
+
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
+
+
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                for (int i = 0; i < response.length(); i++) {
+
                     try {
-                        JSONObject jsonObject = response.getJSONObject(i);
+                        JSONObject jsonObject = response.getJSONObject(0);
 
-                        Detail detail = new Detail();
-                        detail.setName(jsonObject.getString("name"));
+                        retailerName.setText(jsonObject.getString("retailerName"));
+                        returnDate.setText(jsonObject.getString("returnDate"));
 
-                        detailList.add(detail);
+                        JSONArray itemsArray = jsonObject.getJSONArray("items");
+                        for (int j = 0; j < itemsArray.length(); j++) {
+                            //gets each JSON object within the JSON array
+                            JSONObject itemsObject = itemsArray.getJSONObject(j);
+
+
+                            Item item = new Item();
+                            item.setName(itemsObject.getString("name"));
+                            item.setPkd(itemsObject.getString("pkd"));
+                            item.setMrp(itemsObject.getString("mrp"));
+                            item.setQty(itemsObject.getString("qty"));
+                            item.setReason(itemsObject.getString("reason"));
+                            itemList.add(item);
+                        }
+
+
+
+                        JSONArray statusArray = jsonObject.getJSONArray("status");
+                        for (int j = 0; j < statusArray.length(); j++) {
+                            //gets each JSON object within the JSON array
+                            JSONObject statusObject = statusArray.getJSONObject(j);
+
+
+                            Item item = new Item();
+                            item.setName(statusObject.getString("description"));
+                            item.setPkd(statusObject.getString("time"));
+                            itemList.add(item);
+                        }
+
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                         progressDialog.dismiss();
                     }
-                }
-                adapter.notifyDataSetChanged();
+
+                itemAdapter.notifyDataSetChanged();
+                statusAdapter.notifyDataSetChanged();
+
                 progressDialog.dismiss();
+
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -90,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.dismiss();
             }
         });
+
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonArrayRequest);
     }

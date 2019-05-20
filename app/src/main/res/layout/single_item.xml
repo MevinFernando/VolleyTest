@@ -6,12 +6,34 @@
         android:padding="10dp">
 
     <TextView
-        android:id="@+id/detail_name"
+        android:id="@+id/item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Name"
         android:textSize="18sp" />
-
-
+    <TextView
+        android:id="@+id/item_PKD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PKD"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/item_MRP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MRP"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/item_QTY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QTY"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/item_Reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reason"
+        android:textSize="18sp" />
 
 </LinearLayout>

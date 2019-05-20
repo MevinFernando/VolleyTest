@@ -13,12 +13,12 @@ import java.util.List;
  * Created by Mevin on 3/25/2019.
  */
 
-public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder> {
+public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     private Context context;
-    private List<Detail> list;
+    private List<Item> list;
 
-    public DetailAdapter(Context context, List<Detail> list) {
+    public ItemAdapter(Context context, List<Item> list) {
         this.context = context;
         this.list = list;
     }
@@ -31,9 +31,13 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Detail detail = list.get(position);
+        Item item = list.get(position);
 
-        holder.textName.setText(detail.getName());
+        holder.textName.setText(item.getName());
+        holder.textPKD.setText(item.getPkd());
+        holder.textQTY.setText(item.getMrp());
+        holder.textMRP.setText(item.getQty());
+        holder.textReason.setText(item.getReason());
 
 
     }
@@ -45,11 +49,19 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textName;
+        public TextView textPKD;
+        public TextView textMRP;
+        public TextView textQTY;
+        public TextView textReason;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            textName = itemView.findViewById(R.id.detail_name);
+            textName = itemView.findViewById(R.id.item_name);
+            textPKD = itemView.findViewById(R.id.item_PKD);
+            textMRP = itemView.findViewById(R.id.item_MRP);
+            textQTY = itemView.findViewById(R.id.item_QTY);
+            textReason = itemView.findViewById(R.id.item_Reason);
         }
     }
 
